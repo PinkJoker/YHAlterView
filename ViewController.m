@@ -45,7 +45,7 @@
     [self.view addSubview:button];
     button.backgroundColor = [UIColor greenColor];
     [button addTarget:self action:@selector(touchButton) forControlEvents:UIControlEventTouchUpInside];
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 15; i++) {
         UIButton *button = [[UIButton alloc]init];
         [self.btnArray addObject:button];//根据数组元素个数
       //  [button  setTitle:[self btnTile:i] forState:UIControlStateNormal];
@@ -63,8 +63,10 @@
 {
      _BgView = [[UIView alloc]initWithFrame:CGRectMake(self.view.center.x - 150, self.view.center.y-120, 300, 240)];
      [[[UIApplication sharedApplication]windows][0] addSubview:_BgView];
+    _BgView.backgroundColor = [UIColor jk_colorWithHexString:@"2c3e50"];
     self.topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, _BgView.frame.size.width, 40)];
     [_BgView addSubview:self.topView];
+    self.topView.backgroundColor = [UIColor clearColor];
     self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.topView.frame.size.width, self.topView.frame.size.height)];
     [self.topView addSubview:self.titleLabel];
     self.titleLabel.numberOfLines = 1;
@@ -72,7 +74,12 @@
     self.titleLabel.text = @"弹窗";
     self.titleLabel.font = [UIFont systemFontOfSize:17];
     self.titleLabel.textColor = [UIColor whiteColor];
-    self.topView.backgroundColor = [UIColor cyanColor];
+    self.topView.backgroundColor = [UIColor clearColor];
+    _BgView.layer.shadowColor  = [UIColor grayColor].CGColor;
+    _BgView.layer.shadowOffset = CGSizeMake(3, 1);
+    _BgView.layer.shadowRadius = 5;
+    _BgView.layer.shadowOpacity = 1;
+    
     self.type = scrollType;//样式表
     self.line = twoLine;//列数
     
@@ -83,18 +90,17 @@
             self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake( 0 , CGRectGetMaxY(self.topView.frame), self.topView.frame.size.width, _BgView.frame.size.height - self.topView.frame.size.height - 40)];
             self.scrollView.backgroundColor = [UIColor magentaColor];
             [self.BgView addSubview:self.scrollView];
+            
             self.cancelBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(self.scrollView.frame), self.BgView.frame.size.width *0.5, 40)];
-            self.cancelBtn.backgroundColor = [UIColor redColor];
+            self.cancelBtn.backgroundColor = [UIColor clearColor];
             [self.BgView addSubview:self.cancelBtn];
             [self.cancelBtn addTarget:self action:@selector(removeView) forControlEvents:UIControlEventTouchDown];
             
             
             self.enterBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.BgView.frame.size.width *0.5, CGRectGetMaxY(self.scrollView.frame), self.BgView.frame.size.width *0.5, 40)];
-            self.enterBtn.backgroundColor = [UIColor blueColor];
+            self.enterBtn.backgroundColor = [UIColor clearColor];
             [self.BgView addSubview:self.enterBtn];
-            
-            
-            CGFloat buttonH  = 40;
+       CGFloat buttonH  = 40;
             switch (self.line) {
                     
                 case oneLine:
@@ -164,8 +170,17 @@
             
             self.pickView = [[UIPickerView alloc]initWithFrame:CGRectMake( 0 , CGRectGetMaxY(self.topView.frame), self.topView.frame.size.width, _BgView.frame.size.height - self.topView.frame.size.height - 40)];
             [_BgView addSubview:self.pickView];
+            self.pickView.backgroundColor = [UIColor whiteColor];
+            self.cancelBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(self.pickView.frame), self.BgView.frame.size.width *0.5, 40)];
+            self.cancelBtn.backgroundColor = [UIColor clearColor];
+            [self.BgView addSubview:self.cancelBtn];
+            [self.cancelBtn addTarget:self action:@selector(removeView) forControlEvents:UIControlEventTouchDown];
+            [self.cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
             
-            self.pickView.backgroundColor = [UIColor brownColor];
+            self.enterBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.BgView.frame.size.width *0.5, CGRectGetMaxY(self.pickView.frame), self.BgView.frame.size.width *0.5, 40)];
+            self.enterBtn.backgroundColor = [UIColor clearColor];
+            [self.enterBtn setTitle:@"确定" forState:UIControlStateNormal];
+            [self.BgView addSubview:self.enterBtn];
             self.pickView.delegate = self;
             self.pickView.dataSource = self;
             
@@ -190,7 +205,6 @@
     
     _BgView.layer.cornerRadius = 20;
     _BgView.clipsToBounds = YES;
-     _BgView.backgroundColor = [UIColor yellowColor];
     CGPoint point = CGPointMake(self.view.center.x, 0);
     CGPoint toPoint = CGPointMake(self.view.center.x , self.view.center.y);
     [self moveAnimation:point withZoom:toPoint];
@@ -244,9 +258,6 @@
 //取消
 -(void)removeView
 {
-//    [UIView animateWithDuration:1 animations:^{
-//             }];
-    
     [UIView animateWithDuration:1 animations:^{
         _BgView.frame = CGRectMake(self.BgView.center.x, self.BgView.center.y, 0, 0);
 
@@ -261,7 +272,7 @@
     CABasicAnimation *basicAnimate = [CABasicAnimation animationWithKeyPath:@"position"];
     basicAnimate.fromValue = [NSValue valueWithCGPoint:point];
     basicAnimate.toValue = [NSValue valueWithCGPoint:toPoint];
-    basicAnimate.duration = 1;
+    basicAnimate.duration = 0.5;
     basicAnimate.repeatCount = 1;
     CABasicAnimation *zoomAnimation  = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     zoomAnimation.fromValue = [NSNumber numberWithFloat:0.0];
@@ -270,13 +281,13 @@
     zoomAnimation.repeatCount  = 1;
     zoomAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     CAAnimationGroup *group = [CAAnimationGroup animation];
-    group.duration = 2;
+    group.duration = 1.5;
     group.repeatCount = 1;
     group.animations = [NSArray arrayWithObjects:zoomAnimation,basicAnimate, nil];
     
     group.fillMode = kCAFillModeForwards;
     group.removedOnCompletion = NO;
-    [_BgView.layer addAnimation:group forKey:@"scale-move- layer"];
+    [_BgView.layer addAnimation:group forKey:@"move-scale- layer"];
 
 }
 
@@ -291,7 +302,7 @@
 
 -(CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
 {
-    return 60;
+    return 80;
 }
 -(CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
 {
@@ -301,14 +312,16 @@
 {
     return 10;
 }
-
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     return @"返回";
 }
 
 -(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
-    return [[UIView alloc]init];
+    UIView *View = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 80, 40)];
+    View.backgroundColor = [UIColor redColor];
+    view = View;
+    return view;
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
